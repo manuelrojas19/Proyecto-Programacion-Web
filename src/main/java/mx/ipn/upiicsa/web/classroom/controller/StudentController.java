@@ -1,6 +1,7 @@
 package mx.ipn.upiicsa.web.classroom.controller;
 
 import lombok.AllArgsConstructor;
+import mx.ipn.upiicsa.web.classroom.dto.StudentDto;
 import mx.ipn.upiicsa.web.classroom.exception.EmailTakenException;
 import mx.ipn.upiicsa.web.classroom.exception.ExceptionResponse;
 import mx.ipn.upiicsa.web.classroom.exception.StudentNotFoundException;
@@ -40,9 +41,17 @@ public class StudentController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Student> getStudentById(@PathVariable Long id) {
+    public ResponseEntity<StudentDto> getStudentById(@PathVariable Long id) {
         Student student = studentService.getStudentById(id);
-        return new ResponseEntity<>(student, HttpStatus.OK);
+        StudentDto studentDto = StudentDto.builder()
+                .id(student.getId())
+                .firstName(student.getFirstName())
+                .secondName(student.getSecondName())
+                .firstSurname(student.getFirstSurname())
+                .secondSurname(student.getSecondSurname())
+                .email(student.getEmail())
+                .build();
+        return new ResponseEntity<>(studentDto, HttpStatus.OK);
     }
 
     @PostMapping
