@@ -6,6 +6,7 @@ import mx.ipn.upiicsa.web.classroom.exception.EmailTakenException;
 import mx.ipn.upiicsa.web.classroom.exception.ExceptionResponse;
 import mx.ipn.upiicsa.web.classroom.exception.StudentNotFoundException;
 import mx.ipn.upiicsa.web.classroom.model.Student;
+import mx.ipn.upiicsa.web.classroom.mappers.StudentMapper;
 import mx.ipn.upiicsa.web.classroom.service.StudentService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,12 +14,14 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/student")
 @AllArgsConstructor
 public class StudentController {
     private final StudentService studentService;
+    private final StudentMapper studentMapper;
 
     @ExceptionHandler(EmailTakenException.class)
     public ResponseEntity<ExceptionResponse> emailAlreadyTaken(EmailTakenException e) {
@@ -35,41 +38,36 @@ public class StudentController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Student>> getAllStudents() {
-        List<Student> students = studentService.getAllStudents();
-        return new ResponseEntity<>(students, HttpStatus.OK);
+    public ResponseEntity<List<StudentDto>> getAllStudents() {
+        List<StudentDto> studentsDto = studentService.getAllStudents()
+                .stream().map(studentMapper::studentToStudentDto)
+                .collect(Collectors.toList());
+        return new ResponseEntity<>(studentsDto, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<StudentDto> getStudentById(@PathVariable Long id) {
         Student student = studentService.getStudentById(id);
-        StudentDto studentDto = StudentDto.builder()
-                .id(student.getId())
-                .firstName(student.getFirstName())
-                .secondName(student.getSecondName())
-                .firstSurname(student.getFirstSurname())
-                .secondSurname(student.getSecondSurname())
-                .email(student.getEmail())
-                .build();
+        StudentDto studentDto = studentMapper.studentToStudentDto(student);
         return new ResponseEntity<>(studentDto, HttpStatus.OK);
     }
 
     @PostMapping
-    public ResponseEntity<Student> addStudent(@Valid @RequestBody Student student) {
-        Student addedStudent;
-        addedStudent = studentService.addStudent(student);
-        return new ResponseEntity<>(addedStudent, HttpStatus.CREATED);
+    public ResponseEntity<StudentDto> addStudent(@Valid @RequestBody StudentDto studentDto) {
+        Student studentToAdd = studentMapper.studentDtoToStudent(studentDto);
+        Student addedStudent = studentService.addStudent(studentToAdd);
+        return new ResponseEntity<>(studentMapper.studentToStudentDto(addedStudent), HttpStatus.CREATED);
     }
 
     @PutMapping
-    public ResponseEntity<Student> updateStudent(@Valid @RequestBody Student student) {
-        Student updatedStudent;
-        updatedStudent = studentService.updateStudent(student);
-        return new ResponseEntity<>(updatedStudent, HttpStatus.OK);
+    public ResponseEntity<StudentDto> updateStudent(@Valid @RequestBody StudentDto studentDto) {
+        Student student = studentMapper.studentDtoToStudent(studentDto);
+        Student updatedStudent = studentService.updateStudent(student);
+        return new ResponseEntity<>(studentMapper.studentToStudentDto(updatedStudent), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteStudent(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteStudent(@PathVariable Long id) {
         studentService.deleteStudentById(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }

@@ -1,6 +1,5 @@
 package mx.ipn.upiicsa.web.classroom.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,9 +11,8 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class StudentDto implements Serializable {
-    @JsonIgnore
-    private static final long serialVersionUID = 962461950285130579L;
+public class ProfessorDto implements Serializable {
+    private static final long serialVersionUID = -2639550548553901069L;
     private Long id;
     private String firstName;
     private String secondName;
