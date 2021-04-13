@@ -9,7 +9,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>mx.ipn.upiicsa.web</groupId>
-    <artifactId>ClassRoom</artifactId>
+    <artifactId>Classroom</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>ClassRoom</name>
     <description>Demo project for Spring Boot</description>
