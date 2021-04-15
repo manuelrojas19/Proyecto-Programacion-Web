@@ -8,6 +8,9 @@ import mx.ipn.upiicsa.web.classroom.exception.ProfesorNotFoundException;
 import mx.ipn.upiicsa.web.classroom.mappers.ProfessorMapper;
 import mx.ipn.upiicsa.web.classroom.model.Professor;
 import mx.ipn.upiicsa.web.classroom.service.ProfessorService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +25,9 @@ import java.util.stream.Collectors;
 public class ProfessorController {
     private final ProfessorService professorService;
     private final ProfessorMapper professorMapper;
+
+    private static final String DEFAULT_PAGE_NUMBER = "0";
+    public static final String DEFAULT_PAGE_SIZE = "20";
 
     @ExceptionHandler(EmailTakenException.class)
     public ResponseEntity<ExceptionResponse> emailAlreadyTaken(EmailTakenException e) {
@@ -38,11 +44,12 @@ public class ProfessorController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ProfessorDto>> getAllProfessors() {
-        List<ProfessorDto> professorsDto = professorService.getAllProfessors()
-                .stream().map(professorMapper::professorToProfessorDto)
-                .collect(Collectors.toList());
-        return new ResponseEntity<>(professorsDto, HttpStatus.OK);
+    public ResponseEntity<List<ProfessorDto>> getAllProfessors(
+            @RequestParam(name = "page", required = false, defaultValue = DEFAULT_PAGE_NUMBER) Integer page,
+            @RequestParam(name = "size", required = false, defaultValue = DEFAULT_PAGE_SIZE) Integer size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<ProfessorDto> professorsDtoPage = professorService.getAllProfessors(pageable).map(professorMapper::professorToProfessorDto);
+        return new ResponseEntity<>(professorsDtoPage.getContent(), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")

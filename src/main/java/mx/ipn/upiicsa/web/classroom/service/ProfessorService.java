@@ -5,6 +5,8 @@ import mx.ipn.upiicsa.web.classroom.exception.EmailTakenException;
 import mx.ipn.upiicsa.web.classroom.exception.ProfesorNotFoundException;
 import mx.ipn.upiicsa.web.classroom.model.Professor;
 import mx.ipn.upiicsa.web.classroom.repository.ProfessorRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -21,6 +23,10 @@ public class ProfessorService {
 
     public List<Professor> getAllProfessors() {
         return professorRepository.findAll();
+    }
+
+    public Page<Professor> getAllProfessors(Pageable pageable) {
+        return professorRepository.findAll(pageable);
     }
 
     public Professor addProfessor(Professor professor) {

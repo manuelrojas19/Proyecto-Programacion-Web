@@ -8,6 +8,5 @@ import org.mapstruct.Mapper;
 @Mapper(uses = {DataMapper.class})
 public interface ProfessorMapper {
     ProfessorDto professorToProfessorDto(Professor professor);
-
     Professor professorDtoToProfessor(ProfessorDto professorDto);
 }

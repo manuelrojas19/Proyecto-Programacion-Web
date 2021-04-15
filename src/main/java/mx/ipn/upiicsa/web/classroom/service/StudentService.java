@@ -5,6 +5,8 @@ import mx.ipn.upiicsa.web.classroom.exception.EmailTakenException;
 import mx.ipn.upiicsa.web.classroom.exception.StudentNotFoundException;
 import mx.ipn.upiicsa.web.classroom.model.Student;
 import mx.ipn.upiicsa.web.classroom.repository.StudentRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -19,8 +21,9 @@ public class StudentService {
     private static final String STUDENT_NOT_FOUND = "Student with id %d does not exists";
     private static final String EMAIL_TAKEN = "Email %s has already taken";
 
-    public List<Student> getAllStudents() {
-        return studentRepository.findAll();
+
+    public Page<Student> getAllStudents(Pageable pageable) {
+        return studentRepository.findAll(pageable);
     }
 
     public Student addStudent(Student student) {

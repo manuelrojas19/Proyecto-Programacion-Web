@@ -8,13 +8,15 @@ import mx.ipn.upiicsa.web.classroom.exception.StudentNotFoundException;
 import mx.ipn.upiicsa.web.classroom.model.Student;
 import mx.ipn.upiicsa.web.classroom.mappers.StudentMapper;
 import mx.ipn.upiicsa.web.classroom.service.StudentService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/student")
@@ -22,6 +24,9 @@ import java.util.stream.Collectors;
 public class StudentController {
     private final StudentService studentService;
     private final StudentMapper studentMapper;
+
+    private static final String DEFAULT_PAGE_NUMBER = "0";
+    public static final String DEFAULT_PAGE_SIZE = "20";
 
     @ExceptionHandler(EmailTakenException.class)
     public ResponseEntity<ExceptionResponse> emailAlreadyTaken(EmailTakenException e) {
@@ -38,11 +43,13 @@ public class StudentController {
     }
 
     @GetMapping
-    public ResponseEntity<List<StudentDto>> getAllStudents() {
-        List<StudentDto> studentsDto = studentService.getAllStudents()
-                .stream().map(studentMapper::studentToStudentDto)
-                .collect(Collectors.toList());
-        return new ResponseEntity<>(studentsDto, HttpStatus.OK);
+    public ResponseEntity<List<StudentDto>> getAllStudents(
+            @RequestParam(name = "page", required = false, defaultValue = DEFAULT_PAGE_NUMBER) Integer page,
+            @RequestParam(name = "size", required = false, defaultValue = DEFAULT_PAGE_SIZE) Integer size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<StudentDto> studentDtoPage = studentService.getAllStudents(pageable)
+                .map(studentMapper::studentToStudentDto);
+        return new ResponseEntity<>(studentDtoPage.getContent(), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")

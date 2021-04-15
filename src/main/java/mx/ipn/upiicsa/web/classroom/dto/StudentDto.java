@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import mx.ipn.upiicsa.web.classroom.model.Gender;
 
 import java.io.Serializable;
 
@@ -21,4 +22,5 @@ public class StudentDto implements Serializable {
     private String firstSurname;
     private String secondSurname;
     private String email;
+    private Gender gender;
 }

@@ -7,6 +7,5 @@ import org.mapstruct.Mapper;
 @Mapper(uses = {DataMapper.class})
 public interface StudentMapper {
     StudentDto studentToStudentDto(Student student);
-
     Student studentDtoToStudent(StudentDto studentDto);
 }
